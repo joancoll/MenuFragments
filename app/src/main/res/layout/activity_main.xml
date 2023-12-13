@@ -1,58 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-
-
-    <!-- Contenidor de botons -->
     <LinearLayout
-        android:id="@+id/navigationLayout"
+        android:id="@+id/buttonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true">
 
         <Button
-            android:id="@+id/btnLayout1"
+            android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_layout1"
-            style="?android:buttonBarButtonStyle"/>
+            android:text="@string/btn_layout1"/>
 
         <Button
-            android:id="@+id/btnLayout2"
+            android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_layout2"
-            style="?android:buttonBarButtonStyle"/>
+            android:text="@string/btn_layout2"/>
 
         <Button
-            android:id="@+id/btnLayout3"
+            android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_layout3"
-            style="?android:buttonBarButtonStyle"/>
+            android:text="@string/btn_layout3"/>
 
         <Button
-            android:id="@+id/btnLayout4"
+            android:id="@+id/button4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_layout4"
-            style="?android:buttonBarButtonStyle"/>
-
+            android:text="@string/btn_layout4"/>
     </LinearLayout>
-    <!-- Contenidor de fragments -->
+
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/buttonContainer"
+        android:background="@android:color/darker_gray">
+    </FrameLayout>
 
-</LinearLayout>
+</RelativeLayout>

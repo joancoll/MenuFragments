@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MenuLayouts</string>
-    <string name="btn_layout1">L1</string>
-    <string name="btn_layout2">L2</string>
-    <string name="btn_layout3">L3</string>
-    <string name="btn_layout4">L4</string>
+    <string name="btn_layout1">E1</string>
+    <string name="btn_layout2">E2</string>
+    <string name="btn_layout3">E3</string>
+    <string name="btn_layout4">E4</string>
 </resources>

@@ -1,144 +1,113 @@
 package cat.dam.andy.menulayouts
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import cat.dam.andy.menulayouts.ui.theme.AppTheme
+import android.widget.Button
+import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : ComponentActivity() {
-    // Enumeració per als diferents identificadors de disseny
-    enum class LayoutId { LAYOUT1, LAYOUT2, LAYOUT3, LAYOUT4 }
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var frameLayout: FrameLayout
+
+    // Afegit per mantenir un seguiment de l'activitat seleccionada
+    private var selectedActivity: Class<*> = Fragment1::class.java
+    private var selectedButtonId: Int = R.id.button1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            // Aplicació de l'estil temàtic de l'aplicació
-            AppTheme {
-                // Funció principal de Compose
-                MyComposeApp()
-            }
-        }
-    }
+        setContentView(R.layout.activity_main)
 
-    @Composable
-    fun MyComposeApp() {
-        // Estat per recordar quin disseny està seleccionat
-        var selectedLayoutId by rememberSaveable { mutableStateOf(LayoutId.LAYOUT1) }
+        frameLayout = findViewById(R.id.frameLayout)
 
-        // Columna principal que conté botons i contingut
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Funció que mostra els botons per a la selecció de disseny
-            // it és el paràmetre de retorn d'una funció lambda, en aquest cas el LayoutId del botó que s'ha clicat
-            MyComposeButtons(selectedLayoutId = selectedLayoutId, onButtonClick = { selectedLayoutId = it })
-            Spacer(modifier = Modifier.height(5.dp))
-            // Contingut dinàmic basat en la selecció
-            when (selectedLayoutId) {
-                LayoutId.LAYOUT1 -> LayoutContent(LayoutId.LAYOUT1)
-                LayoutId.LAYOUT2 -> LayoutContent(LayoutId.LAYOUT2)
-                LayoutId.LAYOUT3 -> LayoutContent(LayoutId.LAYOUT3)
-                LayoutId.LAYOUT4 -> LayoutContent(LayoutId.LAYOUT4)
-            }
-        }
-    }
-
-    @Composable
-    fun MyComposeButtons(selectedLayoutId: LayoutId, onButtonClick: (LayoutId) -> Unit) {
-        // Llista de parells que defineixen els botons i els seus textos
-        val buttonData = listOf(
-            Pair(LayoutId.LAYOUT1, R.string.btn_layout1),
-            Pair(LayoutId.LAYOUT2, R.string.btn_layout2),
-            Pair(LayoutId.LAYOUT3, R.string.btn_layout3),
-            Pair(LayoutId.LAYOUT4, R.string.btn_layout4)
+        // Botons superiors
+        val buttons = listOf<Button>(
+            findViewById(R.id.button1),
+            findViewById(R.id.button2),
+            findViewById(R.id.button3),
+            findViewById(R.id.button4)
         )
 
-        // Fila de botons amb espaiat i alineació personalitzats
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            // Iteració pels botons i la seva creació
-            buttonData.forEach { (layoutId, stringResourceId) ->
-                val isSelected = layoutId == selectedLayoutId
-
-                Button(
-                    onClick = { onButtonClick(layoutId) },
-                    colors = ButtonDefaults.buttonColors(
-                        Color.Transparent,
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(4.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(
-                            if (isSelected) {
-                                MaterialTheme.colorScheme.primaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.secondaryContainer
-                            }
-                        ),
-                ) {
-                    Text(
-                        text = stringResource(id = stringResourceId),
-                        color = if (isSelected) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        }
-                    )
-                }
+        // Restaurar l'estat si és necessari (per exemple, en cas de rotació)
+        if (savedInstanceState != null) {
+            val className = savedInstanceState.getString(KEY_SELECTED_ACTIVITY)
+            selectedActivity = try {
+                Class.forName(className!!) as Class<*>
+            } catch (e: ClassNotFoundException) {
+                // Si no es pot trobar la classe, utilitza la classe per defecte (Fragment1::class.java)
+                Fragment1::class.java
             }
+            selectedButtonId = savedInstanceState.getInt(KEY_SELECTED_BUTTON_ID)
+        }
+
+        // Configurar els botons
+        buttons.forEachIndexed { index, button ->
+            val activityClass = getActivityClass(index + 1)
+            button.setOnClickListener {
+                refreshButtons(buttons, it.id)
+                navigateToActivity(activityClass)
+            }
+        }
+
+        // Mostrar l'activitat seleccionada. Per defecte la primera
+        refreshButtons(buttons, selectedButtonId)
+        navigateToActivity(selectedActivity)
+    }
+
+    private fun refreshButtons(buttons: List<Button>, buttonId: Int) {
+        // Restaura el color del fons de tots els botons
+        buttons.forEach { button ->
+            button.setBackgroundResource(android.R.drawable.btn_default)
+        }
+        // Canvia el color del fons del botó actual
+        findViewById<Button>(buttonId).setBackgroundResource(R.drawable.button_background_selected)
+        selectedButtonId = buttonId
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Guardar l'activitat seleccionada i el botó per a la restauració de l'estat
+        outState.putString(KEY_SELECTED_ACTIVITY, selectedActivity.name) // Guardar el nom de la classe
+        outState.putInt(KEY_SELECTED_BUTTON_ID, selectedButtonId)
+    }
+
+    private fun navigateToActivity(activityClass: Class<*>) {
+        // Actualitza l'activitat seleccionada
+        selectedActivity = activityClass
+        // Infla l'activitat seleccionada
+        inflateSelectedActivity()
+    }
+
+    private fun inflateSelectedActivity() {
+        val fragmentManager = supportFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+
+        // Crea una instància del fragment corresponent
+        val fragment = when (selectedActivity) {
+            Fragment1::class.java -> Fragment1()
+            Fragment2::class.java -> Fragment2()
+            Fragment3::class.java -> Fragment3()
+            Fragment4::class.java -> Fragment4()
+            else -> Fragment1()  // Fragment per defecte
+        }
+
+        // Reemplaça el contingut actual pel fragment
+        transaction.replace(R.id.frameLayout, fragment)
+        transaction.commit()
+    }
+
+    private fun getActivityClass(buttonNumber: Int): Class<*> {
+        return when (buttonNumber) {
+            1 -> Fragment1::class.java
+            2 -> Fragment2::class.java
+            3 -> Fragment3::class.java
+            4 -> Fragment4::class.java
+            else -> Fragment1::class.java
         }
     }
 
-    @Composable
-    fun LayoutContent(layoutId: LayoutId) {
-        // Context local per accedir als recursos d'Android
-        val context = LocalContext.current
-        // Identificador de recurs de disseny segons la selecció
-        val layoutResId = when (layoutId) {
-            LayoutId.LAYOUT1 -> R.layout.layout1
-            LayoutId.LAYOUT2 -> R.layout.layout2
-            LayoutId.LAYOUT3 -> R.layout.layout3
-            LayoutId.LAYOUT4 -> R.layout.layout4
-        }
-
-        // Contenidor de caixa que conté una vista d'Android inflada
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            AndroidView(
-                factory = { context ->
-                    LayoutInflater.from(context).inflate(layoutResId, null)
-                },
-                modifier = Modifier.fillMaxSize(),
-                update = {
-                    // Actualitzar la vista si és necessari per exemple amb una variable observable
-                }
-            )
-        }
+    companion object {
+        // els companion object són objectes que es poden accedir sense necessitat de crear una instància de la classe
+        private const val KEY_SELECTED_ACTIVITY = "selectedActivity"
+        private const val KEY_SELECTED_BUTTON_ID = "selectedButtonId"
     }
 }
