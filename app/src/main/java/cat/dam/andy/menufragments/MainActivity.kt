@@ -1,4 +1,4 @@
-package cat.dam.andy.menulayouts
+package cat.dam.andy.menufragments
 
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var frameLayout: FrameLayout
+
+    companion object {
+        // els companion object són objectes que es poden accedir sense necessitat de crear una instància de la classe
+        private const val KEY_SELECTED_ACTIVITY = "selectedActivity"
+        private const val KEY_SELECTED_BUTTON_ID = "selectedButtonId"
+    }
 
     // Afegit per mantenir un seguiment de l'activitat seleccionada
     private var selectedActivity: Class<*> = Fragment1::class.java
@@ -103,11 +109,5 @@ class MainActivity : AppCompatActivity() {
             4 -> Fragment4::class.java
             else -> Fragment1::class.java
         }
-    }
-
-    companion object {
-        // els companion object són objectes que es poden accedir sense necessitat de crear una instància de la classe
-        private const val KEY_SELECTED_ACTIVITY = "selectedActivity"
-        private const val KEY_SELECTED_BUTTON_ID = "selectedButtonId"
     }
 }

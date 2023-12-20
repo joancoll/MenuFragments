@@ -1,4 +1,4 @@
-package cat.dam.andy.menulayouts
+package cat.dam.andy.menufragments
 
 import org.junit.Test
 

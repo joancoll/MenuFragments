@@ -1,4 +1,4 @@
-package cat.dam.andy.menulayouts.ui.theme
+package cat.dam.andy.menufragments.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

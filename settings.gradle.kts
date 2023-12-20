@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MenuLayouts"
+rootProject.name = "MenuFragments"
 include(":app")
  
